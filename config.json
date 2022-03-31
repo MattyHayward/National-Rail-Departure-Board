@@ -3,5 +3,9 @@
   "StationCode": "BHM",
   "BorderlessWindow": true,
   "WindowAlwaysOnTop": true,
-  "DebugOutput": true
+  "DebugOutput": true,
+  "WindowDim": {
+    "Height": 95,
+    "Width": 540
+  }
 }

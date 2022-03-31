@@ -7,6 +7,7 @@ import pytz
 from zeep import Client, xsd
 from zeep.plugins import HistoryPlugin
 from tkinter import *
+import tkinter.font as tkfont
 
 from textcolours import *
 from helper import *
@@ -28,7 +29,6 @@ Blink1Speed = 60
 Blink2Speed = 200
 Blink3Speed = 600
 FadeSpeed = 20
-
 
 
 ### Main Variables
@@ -117,7 +117,7 @@ header_value = header(TokenValue=LDB_TOKEN)
 
 root = Tk()
 root.title('Departure Board')
-root.geometry('540x95')
+root.geometry(f'{settings["WindowDim"]["Width"]}x{settings["WindowDim"]["Height"]}')
 root.configure(bg='black')
 
 firstFrame = Frame(root, bg='black', bd=0)  
@@ -158,7 +158,8 @@ ETDLabel.pack( ipadx=0, ipady=0, fill='x', side='right' )
 
 ### Second Line
 
-text_width = 60
+font = tkfont.Font(family="pixelmix", size=12, weight="normal")
+text_width = int(math.ceil(540 / font.measure(" ")))
 text = Text(secondFrame, width=text_width, height=1, bd=0, highlightthickness=0, bg='black', fg=colour.DEFAULT, font=("pixelmix", 12, "normal"))
 text.pack()
 text.tag_configure("center", justify='center')

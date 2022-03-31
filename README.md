@@ -56,6 +56,8 @@ The GUI itself is a borderless window which can be dragged by the mouse. In lieu
 
 Only boardable passenger services that call and depart from the specified station are displayed.
 
+Known bugs: Order of trains always reflects timetabled departure time, not expected times.
+
 
 
 
