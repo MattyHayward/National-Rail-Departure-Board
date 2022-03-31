@@ -159,7 +159,7 @@ ETDLabel.pack( ipadx=0, ipady=0, fill='x', side='right' )
 ### Second Line
 
 text_width = 60
-text = Text(secondFrame, width=text_width, height=1, bd=0, bg='black', fg=colour.DEFAULT, font=("pixelmix", 12, "normal"))
+text = Text(secondFrame, width=text_width, height=1, bd=0, highlightfocus=0, bg='black', fg=colour.DEFAULT, font=("pixelmix", 12, "normal"))
 text.pack()
 text.tag_configure("center", justify='center')
 text.tag_configure("left", justify='left')
