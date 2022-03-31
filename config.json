@@ -1,0 +1,7 @@
+{
+  "apiKey": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "StationCode": "BHM",
+  "BorderlessWindow": true,
+  "WindowAlwaysOnTop": true,
+  "DebugOutput": true
+}
