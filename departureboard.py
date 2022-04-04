@@ -29,6 +29,7 @@ Blink1Speed = 60
 Blink2Speed = 200
 Blink3Speed = 600
 FadeSpeed = 20
+ThirdLineFadeSpeed = 12
 
 
 ### Main Variables
@@ -47,6 +48,7 @@ ClockCount = 0
 DataUpdateCount = 0
 PauseCount = 0
 FadeCount = 0
+ThirdLineFadeCount = ThirdLineFadeSpeed
 TickerTimeCount = 0
 TickerCount = 0
 TickerDone = False
@@ -73,7 +75,7 @@ othertrainDestination = f''
 otherviaDestination = f''
 
 # Blink 3
-currentTrainThirdLine = 1
+currentTrainThirdLine = 0
 
 # Second line
 SecondLineProgress = 0
@@ -239,10 +241,13 @@ def updateTrainData():
     try:   
         services = res.trainServices.service
         NoServicesToggle = False
-        ## Remove first service if should have already departed
-        if((len(services) > 1) and ((datetime.strptime(services[0].std, '%H:%M') + timedelta(seconds=35)) < (datetime.now(pytz.timezone('Europe/London')).replace(year=1900, month=1, day=1).replace(tzinfo=None)) ) and (services[0].etd == "On time")):
+        ## Remove first and/ or second services if should have already departed
+        if ( (len(services) > 1) and ((datetime.strptime(services[0].std, '%H:%M') + timedelta(seconds=35)) < (datetime.now(pytz.timezone('Europe/London')).replace(year=1900, month=1, day=1).replace(tzinfo=None)) ) and ((services[0].etd == "On time") or (services[0].etd == "Cancelled"))):
             NoteStr = f"First listed service removed."
             del services[0]
+        if ( (len(services) > 2) and ((datetime.strptime(services[1].std, '%H:%M') + timedelta(seconds=35)) < (datetime.now(pytz.timezone('Europe/London')).replace(year=1900, month=1, day=1).replace(tzinfo=None)) ) and ((services[1].etd == "On time") or (services[1].etd == "Cancelled"))):
+            NoteStr = f"First listed service removed."
+            del services[1]
         ## Check if need to transition from No Services screen to main
         if (NoServices == True):
             NoServices = False
@@ -502,6 +507,29 @@ def fadeMain(k=0, kmax=20, othercolour=colour.DEFAULT):
         else:
             thirdLineETDLabel.config(fg=fadeColourRed)
 
+def fadeThirdLine(k=0, kmax=20):
+    r_fade_default = int(math.floor((hex_to_rgb(colour.DEFAULT)[0] / kmax) * k))
+    g_fade_default = int(math.floor((hex_to_rgb(colour.DEFAULT)[1] / kmax) * k))
+    b_fade_default = int(math.floor((hex_to_rgb(colour.DEFAULT)[2] / kmax) * k))
+    r_fade_green = int(math.floor((hex_to_rgb(colour.GREEN)[0] / kmax) * k))
+    g_fade_green = int(math.floor((hex_to_rgb(colour.GREEN)[1] / kmax) * k))
+    b_fade_green = int(math.floor((hex_to_rgb(colour.GREEN)[2] / kmax) * k))
+    r_fade_red = int(math.floor((hex_to_rgb(colour.RED)[0] / kmax) * k))
+    g_fade_red = int(math.floor((hex_to_rgb(colour.RED)[1] / kmax) * k))
+    b_fade_red = int(math.floor((hex_to_rgb(colour.RED)[2] / kmax) * k))
+    fadeColourDefault = '#%02x%02x%02x' % (r_fade_default, g_fade_default, b_fade_default)
+    fadeColourGreen = '#%02x%02x%02x' % (r_fade_green, g_fade_green, b_fade_green)
+    fadeColourRed = '#%02x%02x%02x' % (r_fade_red, g_fade_red, b_fade_red)
+    thirdLinenumberLabel.config(fg=fadeColourDefault)
+    thirdLinetimeLabel.config(fg=fadeColourDefault)
+    thirdLineplatformLabel.config(fg=fadeColourDefault)
+    thirdLinedestinationLabel.config(fg=fadeColourDefault)
+    if (thirdLineETDLabel.cget("text") == "On time"):
+        thirdLineETDLabel.config(fg=fadeColourGreen)
+    else:
+        thirdLineETDLabel.config(fg=fadeColourRed)
+
+
 def fadeNoServices(k=0, kmax=20):
     if (k <= 1):
         #updateNoServices()
@@ -568,6 +596,7 @@ def blink3():
         # Set third line labels.
         updateOtherTrains(currentTrainThirdLine)
     else:
+        currentTrainThirdLine = 0
         thirdLinenumberLabel.config(text=f'')
         thirdLinetimeLabel.config(text=f'')
         thirdLineplatformLabel.config(text=f'')
@@ -631,14 +660,14 @@ try:
 
     # Debug
     if (settings['DebugOutput'] == True):
-        print (f'Clock Data B1  B2  B3   Reset RFade  SL Tick Fade Pause')
+        print (f'Clock Data B1  B2  B3   Reset RFade   SL Tick Fade Pause   TL TLFade')
 
     ### Main Loop
     while Running:
 
         # Print Diagnostics
         if (settings['DebugOutput'] == True):
-            print (f'{ClockCount:5} {DataUpdateCount:4} {PlatformETDblinkCount:2} {viaDestinationBlinkCount:3} {ThirdLineBlinkCount:3}   {Reset:5} {ResetFadeCount:5}  {SecondLineProgress:2} {TickerCount:4} {FadeCount:4} {PauseCount:5}', end='\r')
+            print (f'{ClockCount:5} {DataUpdateCount:4} {PlatformETDblinkCount:2} {viaDestinationBlinkCount:3} {ThirdLineBlinkCount:3}   {Reset:5} {ResetFadeCount:5}   {SecondLineProgress:2} {TickerCount:4} {FadeCount:4} {PauseCount:5}   {currentTrainThirdLine:2} {ThirdLineFadeCount:6}', end='\r')
 
         # Check if Running
         if not Running:
@@ -686,7 +715,11 @@ try:
                 else:
                     if (FadeCount == 1):
                         updateFirstTrain()
-                        updateOtherTrains(1)
+                        if (len(services) > 1):
+                            currentTrainThirdLine = 1
+                            updateOtherTrains(currentTrainThirdLine)
+                        else:
+                            currentTrainThirdLine = 0
                     fadeMain(FadeCount, FadeSpeed)
                 fade(FadeCount, FadeSpeed, colour.DEFAULT, fourthLineTimeLabel)
             else:
@@ -755,7 +788,7 @@ try:
                 viaDestination = f''
                 othertrainDestination = f''
                 otherviaDestination = f''
-                currentTrainThirdLine = 1
+                currentTrainThirdLine = 0
                 SecondLineProgress = 0
                 Reset = 3
 
@@ -768,7 +801,11 @@ try:
                     if (NoServices == False):
                         if (ResetFadeCount == 1):
                             updateFirstTrain()
-                            updateOtherTrains(1)
+                            if (len(services) > 1):
+                                currentTrainThirdLine = 1
+                                updateOtherTrains(currentTrainThirdLine)
+                            else:
+                                currentTrainThirdLine = 0
                             text.delete('1.0', END)
                         fadeMain(ResetFadeCount, FadeSpeed)
                 else:
@@ -797,10 +834,28 @@ try:
                 blink2()
 
             # Blink 3
-            ThirdLineBlinkCount += 1
-            if (ThirdLineBlinkCount == Blink3Speed):
+            if (ThirdLineBlinkCount != Blink3Speed):
+                ThirdLineBlinkCount += 1
+            if (len(services) > 2):
+                if (ThirdLineBlinkCount == Blink3Speed):
+                        if (settings['ThirdLineFade'] == True):
+                            ThirdLineFadeCount += 1
+                            if ((ThirdLineFadeCount < ThirdLineFadeSpeed*2) and (ThirdLineFadeCount > ThirdLineFadeSpeed)):
+                                fadeThirdLine(-ThirdLineFadeCount+(ThirdLineFadeSpeed*2), ThirdLineFadeSpeed)
+                            elif (ThirdLineFadeCount == ThirdLineFadeSpeed*2):
+                                ThirdLineFadeCount = 0
+                                blink3()
+                                fadeThirdLine(ThirdLineFadeCount, ThirdLineFadeSpeed)
+                            elif (ThirdLineFadeCount < ThirdLineFadeSpeed):
+                                fadeThirdLine(ThirdLineFadeCount, ThirdLineFadeSpeed)
+                            else:
+                                ThirdLineFadeCount = ThirdLineFadeSpeed
+                                ThirdLineBlinkCount = 0
+                        else:
+                            ThirdLineBlinkCount = 0
+                            blink3()
+            else:
                 ThirdLineBlinkCount = 0
-                blink3()
 
             # Second Line: Cancelled or Calling Points
             if (SecondLineProgress == 0):
@@ -927,5 +982,4 @@ except IndexError as error:
 except Exception as exc:
     print(f'ERROR: Unexpected exception.')
     print(f'{exc}')
-
 

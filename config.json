@@ -7,5 +7,6 @@
   "WindowDim": {
     "Height": 95,
     "Width": 540
-  }
+  },
+  "ThirdLineFade": true
 }
