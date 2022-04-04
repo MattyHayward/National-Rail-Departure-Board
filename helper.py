@@ -445,6 +445,8 @@ def replaceStationName(destination = f''):
         return f"Stratford-u-Avon"
     elif (destination == f"Sudbury & Harrow Road"):
         return f"Sudbury & Harrow Rd"
+    elif (destination == f"Sutton (London)"):
+        return f"Sutton"
     elif (destination == f"Tame Bridge Parkway"):
         return f"Tame Bridge Pkway"
     elif (destination == f"Tutbury and Hatton"):

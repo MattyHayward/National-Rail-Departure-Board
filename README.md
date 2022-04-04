@@ -63,6 +63,8 @@ Known bugs: Order of trains always reflects timetabled departure time, not expec
 
 ## Examples
 
+Visuals are using Windows 10.
+
 ![Departure Board Example 2](images/example2.png)
 
 ![Departure Board Example 3](images/example3.png)
