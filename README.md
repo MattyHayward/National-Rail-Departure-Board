@@ -3,6 +3,8 @@
 
 ![Departure Board Example](images/example.png)
 
+![GitHub](https://img.shields.io/github/license/mattyhayward/National-Rail-Departure-Board) ![GitHub top language](https://img.shields.io/github/languages/top/mattyhayward/National-Rail-Departure-Board)
+
 ___
 
 This is a relatively minimal Tkinter-only graphical National Rail (Great Britain / UK) departure board, created as a replication exercise of a commercially available LED equivalent.

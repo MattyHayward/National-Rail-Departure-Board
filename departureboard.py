@@ -974,12 +974,12 @@ try:
                 SecondLineProgress = 0
 
 except KeyboardInterrupt:
-    print(f'KeyboardInterrupt')
+    print(f'\nKeyboardInterrupt')
 except ValueError as error:
-    print(f'ERROR: {error}')
+    print(f'\nERROR: {error}')
 except IndexError as error:
-    print:(f'ERROR: Index error.')
+    print:(f'\nERROR: Index error.')
 except Exception as exc:
-    print(f'ERROR: Unexpected exception.')
+    print(f'\nERROR: Unexpected exception.')
     print(f'{exc}')
 
