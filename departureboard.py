@@ -30,6 +30,8 @@ Blink2Speed = 200
 Blink3Speed = 600
 FadeSpeed = 20
 ThirdLineFadeSpeed = 12
+if (settings['WhiteText'] == True):
+    colour.DEFAULT = "#FFFFFF"
 
 
 ### Main Variables
